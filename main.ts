@@ -18,8 +18,11 @@ export const COMMIT_MESSAGE =
 const OUTPUT_PATH = "/output/entry.txt";
 
 function validate(message: string): void {
-  if (message.length < 1 || message.length > 200) {
-    throw new Error(`commit message must be 1-200 characters, got ${message.length}`);
+  // Count code points, not UTF-16 units, so the check matches the gate's
+  // "1 to 200 characters" on the text as the judge reads it.
+  const length = Array.from(message).length;
+  if (length < 1 || length > 200) {
+    throw new Error(`commit message must be 1-200 characters, got ${length}`);
   }
   if (message.trim().length === 0) {
     throw new Error("commit message must not be only white space");
@@ -32,4 +35,4 @@ function validate(message: string): void {
 validate(COMMIT_MESSAGE);
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
 writeFileSync(OUTPUT_PATH, COMMIT_MESSAGE, "utf8");
-console.log(COMMIT_MESSAGE);
+console.log(`${COMMIT_MESSAGE} (${Array.from(COMMIT_MESSAGE).length}/200 chars)`);
